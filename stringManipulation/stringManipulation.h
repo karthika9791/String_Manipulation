@@ -17,6 +17,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 //******************************* Global Types ********************************* 
  

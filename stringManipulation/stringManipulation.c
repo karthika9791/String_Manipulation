@@ -22,14 +22,13 @@ typedef enum{
 	OPTION_CONCAT,
 	OPTION_EXIT
 }OPTION_TYPE;
-//Function pointer for string manipulation functions
-typedef bool (*strManipFuncHandler)(uint8_t * );
+
 //structure having user entry, corresponding menu label and function pointer
 typedef struct {
     OPTION_TYPE eInpOption;
     uint8_t * ucMenuString;
-    strManipFuncHandler pHandler;
-}strManipTask;
+    bool (*pStrFucnHandler)(uint8_t * pucInpStr);
+}stStrManipTask;
 
 //***************************** Local Constants ********************************
 #define STRMAIP_MIN_UPPER_CASE   ('A')
@@ -47,15 +46,18 @@ static bool strManipUpperLower(uint8_t * pucInpStr);
 static bool strManipLowerUpper(uint8_t * pucInpStr);
 static bool strManipConcatenate(uint8_t * pucInpStr);
 
-static strManipTask strManiptasks[] = {
+//array of string manipulation structure with input option and corresponding fu-
+//ction
+static stStrManipTask spstStrManiptable[] = {
     {OPTION_UPPER_TO_LOWER, "Uppercase-Lowercase",
-        (strManipFuncHandler)strManipUpperLower},
+        (bool(*)(uint8_t * ))strManipUpperLower},
     {OPTION_LOWER_TO_UPPER, "Lowercase-Uppercase",
-        (strManipFuncHandler)strManipLowerUpper},
+        (bool(*)(uint8_t * ))strManipLowerUpper},
     {OPTION_CONCAT, "String concatenate",
-		(strManipFuncHandler)strManipConcatenate}
+		(bool(*)(uint8_t * ))strManipConcatenate}
 };
-#define TASK_COUNT (sizeof(strManiptasks)/(sizeof(strManiptasks[0])))
+//number of input options
+#define TASK_COUNT (sizeof(spstStrManiptable)/(sizeof(spstStrManiptable[0])))
 
 //****************************** FUNCTION_HEADER ******************************* 
 //Purpose : This function takes the option for particular string function, stri-
@@ -86,9 +88,9 @@ bool strManipUserInterface(void)
         
         for(ucIterIndex = 0; ucIterIndex < TASK_COUNT; ucIterIndex++)
         {
-            if(strManiptasks[ucIterIndex].eInpOption == unInpNum)
+            if(spstStrManiptable[ucIterIndex].eInpOption == unInpNum)
             {
-                strManiptasks[ucIterIndex].pHandler(pucInpStr);
+                spstStrManiptable[ucIterIndex].pStrFucnHandler(pucInpStr);
             }
         }
     }
@@ -101,7 +103,7 @@ bool strManipUserInterface(void)
 //Purpose : This function converts upperccase characters in the string to lower-
 //          case
 //Inputs  : pucinpStr - User input string
-//Outputs : user input string is converted to lowercase 
+//Outputs : pucinpStr - user input string is converted to lowercase 
 //Return  : blReturnFlag - bool value based on execution
 //Notes   : checks if the char in the string is uppercase then it is added to 
 //          get the corresponding lowercase char
@@ -110,19 +112,22 @@ static bool strManipUpperLower(uint8_t * pucInpStr)
 {
     static bool blReturnFlag = false; 
     static uint16_t unStrIndex = 0;  
+    static uint8_t *pDisplayAddr = NULL;
+    pDisplayAddr = pucInpStr;
 
     if (NULL != pucInpStr) {
 
-        while('\0' !=  pucInpStr[unStrIndex])
+        while('\0' !=  *pucInpStr)
         {
 		    if((STRMAIP_MIN_UPPER_CASE <= pucInpStr[unStrIndex]) && 
                 (STRMAIP_MAX_UPPER_CASE >= pucInpStr[unStrIndex]))
 		    {
 			    pucInpStr[unStrIndex] += STRMAIP_UPPER_LOWER_DIFF;
 		    }
-		    unStrIndex++;
+		    pucInpStr++;
 	    }
-	    strManipDisplay(pucInpStr); 
+
+	    strManipDisplay(pDisplayAddr); 
         blReturnFlag = true;        
     }
     return blReturnFlag;   
@@ -141,19 +146,21 @@ static bool strManipLowerUpper(uint8_t * pucInpStr)
 {
     static bool blReturnFlag = false;
     static uint16_t unStrIndex = 0;
+    static uint8_t *pDisplayAddr = NULL;
+    pDisplayAddr = pucInpStr;
 
     if (NULL != pucInpStr) {
 
-	    while('\0' != pucInpStr[unStrIndex])
+	    while('\0' != *pucInpStr)
 	    {
 		    if(STRMAIP_MIN_LOW_CASE <= pucInpStr[unStrIndex] && 
                 STRMAIP_MAX_LOW_CASE >= pucInpStr[unStrIndex])
 		    {
 			    pucInpStr[unStrIndex] -= STRMAIP_UPPER_LOWER_DIFF;
 		    }
-		    unStrIndex++;
+		    pucInpStr++;
 	    }
-	    strManipDisplay(pucInpStr);
+	    strManipDisplay(pDisplayAddr);
         blReturnFlag = true;         
     }
     return blReturnFlag;     
@@ -173,24 +180,22 @@ static bool strManipConcatenate(uint8_t * pucInpStr)
     static uint16_t unCatStrIndex = 0;
     static uint16_t unStrIndex = 0;
     static uint8_t pucCatStr[STRMAIP_MAX_STR_SIZE] = {0};
+    uint8_t *pucConcatString = NULL;
+    uint32_t ulConcatStringLen = 0;
+
     printf("Enter the string to be concatenated\n");
     scanf(" %[^\n]",pucCatStr);
+    ulConcatStringLen = strlen(pucInpStr) + strlen(pucCatStr);
+    pucConcatString = (uint8_t * )malloc(ulConcatStringLen * sizeof(uint8_t));
 
-    if (NULL != pucInpStr) {
-
-	    while('\0' != pucInpStr[unStrIndex])
-		    unStrIndex++;
-
-	    while('\0' != pucCatStr[unCatStrIndex])
-	    {
-		    pucInpStr[unStrIndex] = pucCatStr[unCatStrIndex];
-		    unStrIndex++;
-		    unCatStrIndex++;
-	    }
-	    pucInpStr[unStrIndex] = '\0';
-        strManipDisplay(pucInpStr);
+    if(pucConcatString != NULL)
+    {
+        strncpy(pucConcatString, pucInpStr, strlen(pucInpStr));
+        strncat(pucConcatString, pucCatStr,strlen(pucCatStr));
+        strManipDisplay(pucConcatString);
+        free(pucConcatString);
         blReturnFlag = true;
-    }    
+    }  
 	return blReturnFlag;
 }
 
@@ -212,6 +217,4 @@ static bool strManipDisplay(uint8_t * pucInpStr)
     }
     return blReturnFlag;    
 }
-
-
 // EOF
