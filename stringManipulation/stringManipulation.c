@@ -37,7 +37,7 @@ typedef struct {
 #define STRMAIP_MAX_LOW_CASE     ('z')
 #define STRMAIP_UPPER_LOWER_DIFF (32)
 #define STRMAIP_MAX_STR_SIZE     (100)
-#define TASK_COUNT (X)           (sizeof(X)/sizeof(X[0]))
+#define TASK_COUNT(X)           (sizeof(X)/sizeof(X[0]))
 
 //***************************** Local Variables ********************************
 
@@ -109,7 +109,7 @@ bool strManipUserInterface (void)
 //******************************************************************************
 static bool strManipUpperLower (uint8_t * pucInpStr)
 {
-    static bool blReturnFlag = false;   
+    bool blReturnFlag = false;   
     uint8_t *pDisplayAddr = pucInpStr;
 
     if (NULL != pucInpStr) {
@@ -141,8 +141,8 @@ static bool strManipUpperLower (uint8_t * pucInpStr)
 //******************************************************************************
 static bool strManipLowerUpper (uint8_t * pucInpStr)
 {
-    static bool blReturnFlag = false;
-    static uint8_t *pDisplayAddr = NULL;
+    bool blReturnFlag = false;
+    uint8_t *pDisplayAddr = NULL;
     pDisplayAddr = pucInpStr;
 
     if (NULL != pucInpStr) {
@@ -172,10 +172,10 @@ static bool strManipLowerUpper (uint8_t * pucInpStr)
 //******************************************************************************
 static bool strManipConcatenate (uint8_t * pucInpStr)
 {
-    static bool blReturnFlag = false;
-    static uint16_t unCatStrIndex = 0;
-    static uint16_t unStrIndex = 0;
-    static uint8_t pucCatStr[STRMAIP_MAX_STR_SIZE] = {0};
+    bool blReturnFlag = false;
+    uint16_t unCatStrIndex = 0;
+    uint16_t unStrIndex = 0;
+    uint8_t pucCatStr[STRMAIP_MAX_STR_SIZE] = {0};
     uint8_t *pucConcatString = NULL;
     uint32_t ulConcatStringLen = 0;
 
@@ -183,11 +183,13 @@ static bool strManipConcatenate (uint8_t * pucInpStr)
     scanf (" %[^\n]",pucCatStr);
     ulConcatStringLen = strlen (pucInpStr) + strlen (pucCatStr);
     pucConcatString = (uint8_t * )malloc (ulConcatStringLen * sizeof(uint8_t));
+    uint8_t *pucSecdest = NULL;
 
     if (pucConcatString != NULL)
     {
         strncpy (pucConcatString, pucInpStr, strlen(pucInpStr));
-        strncat (pucConcatString, pucCatStr,strlen(pucCatStr));
+        next_dest = pucConcatString + strlen(pucInpStr);
+        strncpy (pucSecdest, pucCatStr, strlen(pucCatStr));
         strManipDisplay (pucConcatString);
         free (pucConcatString);
         blReturnFlag = true;
