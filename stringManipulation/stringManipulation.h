@@ -26,7 +26,7 @@
 //***************************** Global Variables ******************************* 
 
 //**************************** Function Declarations ***************************
-bool strManipUserInterface(void);
+bool strManipUserInterface (void);
 
 #endif // STRING_MANIPULATION_H_ 
 // EOF

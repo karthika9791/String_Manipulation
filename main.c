@@ -29,11 +29,11 @@
 //Return  : returns 0 
 //Notes   : None
 //****************************************************************************** 
-int main()
+int main ()
 {	
-	if(!strManipUserInterface())
+	if (!strManipUserInterface())
 	{
-		printf("Program failed\n");
+		printf ("Program failed\n");
 		return 0;
 	}
 	return 0;
