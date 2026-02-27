@@ -110,8 +110,7 @@ bool strManipUserInterface(void)
 //******************************************************************************
 static bool strManipUpperLower(uint8_t * pucInpStr)
 {
-    static bool blReturnFlag = false; 
-    static uint16_t unStrIndex = 0;  
+    static bool blReturnFlag = false;   
     static uint8_t *pDisplayAddr = NULL;
     pDisplayAddr = pucInpStr;
 
@@ -119,10 +118,10 @@ static bool strManipUpperLower(uint8_t * pucInpStr)
 
         while('\0' !=  *pucInpStr)
         {
-		    if((STRMAIP_MIN_UPPER_CASE <= pucInpStr[unStrIndex]) && 
-                (STRMAIP_MAX_UPPER_CASE >= pucInpStr[unStrIndex]))
+		    if((STRMAIP_MIN_UPPER_CASE <= *pucInpStr) && 
+                (STRMAIP_MAX_UPPER_CASE >= *pucInpStr))
 		    {
-			    pucInpStr[unStrIndex] += STRMAIP_UPPER_LOWER_DIFF;
+			    *pucInpStr += STRMAIP_UPPER_LOWER_DIFF;
 		    }
 		    pucInpStr++;
 	    }
