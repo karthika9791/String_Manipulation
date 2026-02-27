@@ -183,13 +183,24 @@ static bool strManipConcatenate (uint8_t * pucInpStr)
     scanf (" %[^\n]",pucCatStr);
     ulConcatStringLen = strlen (pucInpStr) + strlen (pucCatStr);
     pucConcatString = (uint8_t * )malloc (ulConcatStringLen * sizeof(uint8_t));
-    uint8_t *pucSecdest = NULL;
 
     if (pucConcatString != NULL)
     {
-        strncpy (pucConcatString, pucInpStr, strlen(pucInpStr));
-        next_dest = pucConcatString + strlen(pucInpStr);
-        strncpy (pucSecdest, pucCatStr, strlen(pucCatStr));
+        uint8_t *pucSecdest = pucConcatString;
+        uint8_t *pucTempCat = pucCatStr;
+        while(*pucInpStr != '\0')
+        {
+            *pucSecdest = *pucInpStr;
+            pucSecdest++;
+            pucInpStr++;
+        }
+        while(*pucTempCat != '\0')
+        {
+            *pucSecdest = *pucTempCat;
+            pucTempCat++;
+            pucSecdest++;
+        }
+        *pucSecdest = '\0';
         strManipDisplay (pucConcatString);
         free (pucConcatString);
         blReturnFlag = true;
